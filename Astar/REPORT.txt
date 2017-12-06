@@ -1,0 +1,72 @@
+REPORT.txt
+
+In this start I attempted to make a path tracing algorithm for A* and D* to find the shortest path.
+Below are the requirements I attempted:
+
+3 Default Maps:
+Customizable map( 100, 500, 1000 cells)
+Final Path Drawn
+Final # Steps Displayed
+Efficency Smooth Animation
+Control Speed Animation
+At least size 500 support size
+Configurable goal and start placement
+Stepped Speed
+Report w/ screenshots and video
+Quality Craftmanship
+Grading.txt
+3 tests for correctness
+Readme.txt
+Demo
+Manhattan Heuristics( checking distance from the node by moving only horizontally and vertically)
+
+Embellishments
+----------------
+Compare to D*
+Large Environment of more than 1000 cells
+Circle shapes
+
+Other:
+ I added arrows to the rectangles to point to the the parent that they originated from.
+ path finding algorithm can make diagonal cuts
+ 
+< Left
+> Right
+^ Up
+v down
+'\ topL
+/' top R
+./ botL
+\. botR
+
+
+ The default map of 1000 randomly generates obstacles.
+ 
+ ---------------------------
+ How it works
+ ----------------------------
+ 
+ 1) options is to click on the default map
+ 2) assign values to all the fields (except speed) and step through the program
+ 3) assign values to all the field (including speed) and start the program
+ 
+The start node is in green, it checks all it's neighbors and pushes them onto the stack.
+The neighbor with the lowest F value becomes the new start node.
+This continues until we reach the end node( blue) in which case it is turned yellow.
+The neighbors that are checked change from red to black.
+Once the end node is reached a white path is drawn from start to finish
+There are also arrows pointing to the orgin parent
+
+-------------------------------
+
+I implemented the Manhattan Heuristics but the algorithm was still able to cut diagonally.
+I notice that the D* algorithm the path can be sometimes longer on the same map compared to A*
+There were a few bugs in the program; one of them being that the program will find the shortest path to
+from the start to end node. But sometimes instead of going straight 4 nodes it will zigzag and make it to the
+end node in 4 nodes. Travelling diagonally takes longer than travelling horizontally, but the program
+assumed that this was the same. With larger maps, I found that the Heuristics were off and the path that was traced out
+wasn't always the shortest possible path.
+
+ 
+ 
+ 

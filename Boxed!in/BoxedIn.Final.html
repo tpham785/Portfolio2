@@ -1,0 +1,786 @@
+
+<!--Base code for moving the purple ball-->
+<!--http://cobweb.cs.uga.edu/~maria/classes/4070-Spring-2016/tutorial1/8.keyboard-purple-ball-keyboard-SHIFT.html-->
+
+<!--Setting the interval-->
+<!--http://www.w3schools.com/jsref/met_win_setinterval.asp-->
+
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Boxed!IN! </title>
+    <style type="text/css">
+        canvas { border: 3px solid black; }
+    </style>
+
+    <script type="text/javascript">
+
+        // Global variable here
+
+        var ctx;
+        var beginGame = false;
+
+        var dx = 9;
+        var dy = 9;
+
+        var x = 150;
+        var y = 300;
+
+        var radius = 8;
+
+        var WIDTH = 300;
+        var HEIGHT = 200;
+
+        var interval1 = 10;
+        var interval2 = 1000;
+        var canvas;
+        var intervalId = 0;
+
+        var rightDown = false;
+        var leftDown = false;
+        var fac=1;
+        var shiftkey = false;
+        var difficultyLevel = 1;
+
+
+        var topColor    = "black";
+        var leftColor   = "black";
+        var bottomColor = "black";
+        var rightColor  = "black";
+
+
+
+        var gameScore = 1500;
+        var gameLevel= 1;
+
+        var Asteroid = function (x,y,width,height,color) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.hit = false;
+            this.color = color;
+        };
+
+
+////////Wave 1
+        var asteroidListTop1 = [15];
+        var topPos1 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop1[i] = new Asteroid( topPos1,10,20,20, "black");
+            topPos1+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom1 = [15];
+        var botPos1 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom1[i] = new Asteroid( botPos1,590,20,20, "black");
+            botPos1+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight1 = [15];
+        var rightPos1 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight1[i] = new Asteroid( 590,rightPos1,20,20, "black");
+            rightPos1+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft1 = [15];
+        var leftPos1 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft1[i] = new Asteroid( 10, leftPos1,20,20, "black");
+            leftPos1+=50;
+        }
+
+
+
+
+        ////////////////Wave 2
+        var asteroidListTop2 = [15];
+        var topPos2 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop2[i] = new Asteroid( topPos2,10,20,20, "green");
+            topPos2+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom2 = [15];
+        var botPos2 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom2[i] = new Asteroid( botPos2,590,20,20, "green");
+            botPos2+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight2 = [15];
+        var rightPos2 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight2[i] = new Asteroid( 590,rightPos2,20,20, "green");
+            rightPos2+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft2 = [15];
+        var leftPos2 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft2[i] = new Asteroid( 10, leftPos2,20,20, "green");
+            leftPos2+=50;
+        }
+
+
+
+        ////////////////Wave 3
+        var asteroidListTop3 = [15];
+        var topPos3 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop3[i] = new Asteroid( topPos3,10,20,20, "green");
+            topPos3+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom3 = [15];
+        var botPos3 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom3[i] = new Asteroid( botPos3,590,20,20, "green");
+            botPos3+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight3 = [15];
+        var rightPos3 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight3[i] = new Asteroid( 590,rightPos3,20,20, "green");
+            rightPos3+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft3 = [15];
+        var leftPos3 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft3[i] = new Asteroid( 10, leftPos3,20,20, "green");
+            leftPos3+=50;
+        }
+        ////////////////Wave 4
+        var asteroidListTop4 = [15];
+        var topPos4 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop4[i] = new Asteroid( topPos4,10,20,20, "yellow");
+            topPos4+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom4 = [15];
+        var botPos4 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom4[i] = new Asteroid( botPos4,590,20,20, "yellow");
+            botPos4+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight4 = [15];
+        var rightPos4 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight4[i] = new Asteroid( 590,rightPos4,20,20, "yellow");
+            rightPos4+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft4 = [15];
+        var leftPos4 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft4[i] = new Asteroid( 10, leftPos4,20,20, "yellow");
+            leftPos4+=50;
+        }
+        ////////////////Wave 5
+        var asteroidListTop5 = [15];
+        var topPos5 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop5[i] = new Asteroid( topPos5,10,20,20, "yellow");
+            topPos5+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom5 = [15];
+        var botPos5 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom5[i] = new Asteroid( botPos5,590,20,20, "yellow");
+            botPos5+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight5 = [15];
+        var rightPos5 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight5[i] = new Asteroid( 590,rightPos5,20,20, "yellow");
+            rightPos5+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft5 = [15];
+        var leftPos5 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft5[i] = new Asteroid( 10, leftPos5,20,20, "yellow");
+            leftPos5+=50;
+        }
+        ////////////////Wave 6
+        var asteroidListTop6 = [15];
+        var topPos6 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop6[i] = new Asteroid( topPos6,10,20,20, "yellow");
+            topPos6+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom6 = [15];
+        var botPos6 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom6[i] = new Asteroid( botPos6,590,20,20, "yellow");
+            botPos6+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight6 = [15];
+        var rightPos6 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight6[i] = new Asteroid( 590,rightPos6,20,20, "yellow");
+            rightPos6+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft6 = [15];
+        var leftPos6 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft6[i] = new Asteroid( 10, leftPos6,20,20, "yellow");
+            leftPos6+=50;
+        }
+        ////////////////Wave 7
+        var asteroidListTop7 = [15];
+        var topPos7 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop7[i] = new Asteroid( topPos7,10,20,20, "yellow");
+            topPos7+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom7 = [15];
+        var botPos7 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom7[i] = new Asteroid( botPos7,590,20,20, "yellow");
+            botPos7+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight7 = [15];
+        var rightPos7 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight7[i] = new Asteroid( 590,rightPos7,20,20, "yellow");
+            rightPos7+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft7 = [15];
+        var leftPos7 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft7[i] = new Asteroid( 10, leftPos7,20,20,"yellow");
+            leftPos7+=50;
+        }
+        ////////////////Wave 8
+        var asteroidListTop8 = [15];
+        var topPos8 = 30;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListTop8[i] = new Asteroid( topPos8,10,20,20,"yellow");
+            topPos8+=50;
+        }
+
+        //list for bottom asteroids
+        var asteroidListBottom8 = [15];
+        var botPos8 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListBottom8[i] = new Asteroid( botPos8,590,20,20, "yellow");
+            botPos8+=50;
+        }
+
+
+        //list for right asteroids
+        var asteroidListRight8 = [15];
+        var rightPos8 = 10;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListRight8[i] = new Asteroid( 590,rightPos8,20,20,"yellow");
+            rightPos8+=50;
+        }
+
+        //list for left asteroids
+        var asteroidListLeft8 = [15];
+        var leftPos8 = 35;
+
+        for ( i = 0; i < 15; i++){
+            asteroidListLeft8[i] = new Asteroid( 10, leftPos8,20,20, "yellow");
+            leftPos8+=50;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //Collision detection between asteroids and spaceship
+        function distance(x1, x2, y1, y2){
+
+            var ddx = x1 - x2;
+            var ddy = y1 - y2;
+            return Math.sqrt((ddx * ddx) + (ddy * ddy)); //returns the distance
+
+
+        }
+
+        function incrementDifficultyLevel(){
+            difficultyLevel++;
+        }
+
+        function changeDifficultyLevelColor(){
+            switch(difficultyLevel)
+            {
+                case 1:
+
+                    topColor    = "red";
+                    leftColor   = "black";
+                    bottomColor = "black";
+                    rightColor  = "black";
+
+                    break;
+
+                case 2:
+
+                    topColor    = "red";
+                    leftColor   = "red";
+                    bottomColor = "black";
+                    rightColor  = "black";
+
+                    break;
+
+                default:
+
+                    topColor    = "red";
+                    leftColor   = "red";
+                    bottomColor = "red";
+                    rightColor  = "black";
+
+                    break;
+            }
+        }
+
+        // HERE *** set rightDown or leftDown if the right or left keys are down
+        function onKeyDown(evt)
+        {
+            // http://www.w3schools.com/js/tryit.asp?filename=try_dom_event_keycode
+            switch (evt.keyCode)
+            {
+                case 38:  /* Up arrow was pressed */
+
+                    if( y - dy > 20 )   		// can we go up if yes
+                    {
+                        if (evt.shiftKey) fac = 10;
+                        else fac = 1;
+                        y -= fac * dy; // GO UP
+                    }
+
+                    break;
+
+                case 40:  /* Down arrow was pressed */
+                    if	 (y + dy < HEIGHT - (radius/2 + 20))  // are we below the floor?
+                    {
+                        if (evt.shiftKey) fac = 10;
+                        else fac = 1;
+                        y += fac * dy;  // Go DOWN
+                    }
+
+                    break;
+
+                case 37:  /* Left arrow was pressed */
+                    if ( x - dx > 25 )
+                    {
+                        if (evt.shiftKey) fac = 10;
+                        else fac = 1;
+                        x -= fac * dx; 			// Go LEFT
+                    }
+
+                    break;
+                case 39:  /* Right arrow was pressed */
+                    if (x + dx < WIDTH - 25)
+                    {
+                        if (evt.shiftKey) fac = 10;
+                        else fac = 1;
+                        x += fac * dx; // Go RIGHT
+                    }
+
+                    break;
+                case 13: /*Enter key was pressed */
+                    beginGame = true;
+
+            } // end switch
+
+
+        } // end function
+
+        //*** and unset them when the right or left key is released
+        function onKeyUp(evt)
+        {
+        } // end onKeyUp function
+
+        function init()
+        {
+            ctx = document.getElementById('canvas').getContext('2d');
+            canvas = document.getElementById('canvas');
+
+
+
+            WIDTH = ctx.canvas.width; // not with the canvas 'variable'
+            HEIGHT = ctx.canvas.height;
+
+            //**** ADD THIS *******
+            window.addEventListener('keydown',onKeyDown,true);
+            //window.addEventListener('keyup',onKeyUp,true);
+
+            // call setInterval to request browser to run function every 10 milliseconds
+            setInterval( draw, interval1 );
+            setInterval( incrementDifficultyLevel, interval2);
+        }
+
+        function spaceShip(x,y,r)
+        {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI*2, true);
+            ctx.closePath();
+            ctx.fillStyle = "red";
+            ctx.fill();
+        }
+
+        function rect(x,y,w,h,color)
+        {
+            ctx.beginPath();
+            ctx.rect(x,y,w,h);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        function clear()
+        {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        }
+        //END LIBRARY CODE
+
+
+
+        function sendAsteroids(asteroidList, pos){
+
+            for(i = 0; i < 15; i++) {
+                rect(asteroidList[i].x, asteroidList[i].y, asteroidList[i].width, asteroidList[i].height, asteroidList[i].color);
+
+                if ((distance(asteroidList[i].x + (asteroidList[i].width/2), x , asteroidList[i].y + (asteroidList[i].height/2), y ) < 18)) {
+
+                    if(!asteroidList[i].hit){
+                        gameScore -=100;
+                    }
+
+                    asteroidList[i].hit = true;
+                    asteroidList[i].color = "red";
+
+
+                }
+
+
+                switch(pos) {
+                    case "top":
+
+                        if (asteroidList[i].hit ) {
+                            asteroidList[i].y--;
+                        }
+                        else {
+                            asteroidList[i].y++;
+                        }
+                        break;
+
+
+                    case "bottom":
+
+                        if (asteroidList[i].hit ) {
+                            asteroidList[i].y++;
+                        }
+                        else {
+                            asteroidList[i].y--;
+                        }
+                        break;
+                    case "right":
+
+                        if (asteroidList[i].hit ) {
+                            asteroidList[i].x++;
+                        }
+                        else {
+                            asteroidList[i].x--;
+                        }
+                        break;
+
+                    case "left":
+
+                        if (asteroidList[i].hit ) {
+                            asteroidList[i].x--;
+                        }
+                        else {
+                            asteroidList[i].x++;
+                        }
+                        break;
+                }
+
+
+                }//end of for loop
+        }
+
+
+        function sendWave1(){
+            sendAsteroids(asteroidListTop1, "top");
+            sendAsteroids(asteroidListBottom1, "bottom");
+            sendAsteroids(asteroidListRight1, "right");
+            sendAsteroids(asteroidListLeft1, "left");
+        }
+
+
+        function sendWave2(){
+            sendAsteroids(asteroidListTop2, "top");
+            sendAsteroids(asteroidListBottom2, "bottom");
+            sendAsteroids(asteroidListRight2, "right");
+            sendAsteroids(asteroidListLeft2, "left");
+        }
+
+        function sendWave3(){
+            sendAsteroids(asteroidListTop3, "top");
+            sendAsteroids(asteroidListBottom3, "bottom");
+            sendAsteroids(asteroidListRight3, "right");
+            sendAsteroids(asteroidListLeft3, "left");
+        }
+
+        function sendWave4(){
+            sendAsteroids(asteroidListTop4, "top");
+            sendAsteroids(asteroidListBottom4, "bottom");
+            sendAsteroids(asteroidListRight4, "right");
+            sendAsteroids(asteroidListLeft4, "left");
+        }
+
+        function sendWave5(){
+            sendAsteroids(asteroidListTop5, "top");
+            sendAsteroids(asteroidListBottom5, "bottom");
+            sendAsteroids(asteroidListRight5, "right");
+            sendAsteroids(asteroidListLeft5, "left");
+        }
+
+        function sendWave6(){
+            sendAsteroids(asteroidListTop6, "top");
+            sendAsteroids(asteroidListBottom6, "bottom");
+            sendAsteroids(asteroidListRight6, "right");
+            sendAsteroids(asteroidListLeft6, "left");
+        }
+
+        function sendWave7(){
+            sendAsteroids(asteroidListTop7, "top");
+            sendAsteroids(asteroidListBottom7, "bottom");
+            sendAsteroids(asteroidListRight7, "right");
+            sendAsteroids(asteroidListLeft7, "left");
+        }
+
+        function sendWave8(){
+            sendAsteroids(asteroidListTop8, "top");
+            sendAsteroids(asteroidListBottom8, "bottom");
+            sendAsteroids(asteroidListRight8, "right");
+            sendAsteroids(asteroidListLeft8, "left");
+        }
+
+        function draw()
+        {
+            clear();
+
+
+            if(!beginGame) {
+              //  rect(0, 0, 600, 600, rightColor);  //right side
+                ctx.font = "40px Arial";
+                ctx.fillText("Boxed!In!:", 100, 50);
+
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText("Rules:", 0, 90);
+                ctx.fillText("*Control the red ball with the arrow keys.", 0, 130);
+                ctx.fillText("*Avoid colliding with the squares.", 0, 170);
+                ctx.fillText("*For each square you hit 100 points will be deducted.", 0, 210);
+                ctx.fillText("Press -----ENTER------ to begin play", 80, 510);
+
+                canvas.style.background = "Room.2.jpg";
+            }
+            else {
+
+                ctx.font = "20px Arial";
+                ctx.fillStyle = "white";
+                ctx.fillText("Game Score: " + gameScore + "        Level: " + gameLevel, 150, 50);
+
+
+                rect(20, 0, 560, 20, topColor);    //top side
+                rect(0, 20, 20, 560, leftColor);   //left side
+                rect(20, 580, 560, 560, bottomColor); //bottom side
+                rect(580, 20, 560, 560, rightColor);  //right side
+
+
+                ///////////////Level 1
+
+                sendWave1();
+
+
+                ////////////////Level 2
+
+
+                if (gameScore >= 0) {
+                    for (i = 0; i < 15; i++) {
+                        if (asteroidListTop1[i].y >= 1000) {
+                            gameLevel = 2;
+                            topColor = "green";
+                            bottomColor = "green";
+                            rightColor = "green";
+                            leftColor = "green";
+                            sendWave2();
+                        }
+                    }
+
+
+                    for (i = 0; i < 15; i++) {
+                        if (asteroidListTop2[i].y >= 300) {
+                            sendWave3();
+                        }
+                    }
+
+
+                    ///////Level 3
+
+                    for (i = 0; i < 15; i++) {
+                        if (asteroidListTop3[i].y >= 1000) {
+                            gameLevel = 3;
+                            topColor = "yellow";
+                            bottomColor = "yellow";
+                            rightColor = "yellow";
+                            leftColor = "yellow";
+                            sendWave4();
+                        }
+                    }
+
+
+                    for (i = 0; i < 15; i++) {
+                        if (asteroidListTop4[0].y >= 200) {
+                            sendWave5();
+                        }
+                    }
+
+                    for (i = 0; i < 15; i++) {
+                        if (asteroidListTop4[0].y >= 400) {
+                            sendWave6();
+                        }
+                    }
+
+                    for (i = 0; i < 15; i++) {
+                        if (asteroidListTop4[0].y >= 600) {
+                            sendWave7();
+                        }
+                    }
+
+                    ///Signal Game Over
+                    for (i = 0; i < 15; i++) {
+                        if (asteroidListTop7[0].y >= 600) {
+
+                            ctx.font = "50px Arial";
+                            ctx.fillStyle = "black";
+                            ctx.fillText("Game Over", 200, 300);
+                        }
+                    }
+                } else {
+                    ctx.font = "50px Arial";
+                    ctx.fillStyle = "black";
+                    ctx.fillText("Game Over", 200, 300);
+
+                }
+
+
+                ctx.fillStyle = topColor;
+                spaceShip(x, y, radius);
+            }
+        }
+
+
+    </script>
+</head>
+
+<!-- HERE we add an explicit call to the draw() function -->
+<body background= "Room.2.jpg" onload="init()">
+<canvas id="canvas" width="600" height="600">
+    Your browser does not support the canvas element.
+</canvas>
+</body>
+</html>
+
+

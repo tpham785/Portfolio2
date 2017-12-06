@@ -1,0 +1,955 @@
+<!--Base code for moving the purple ball-->
+<!--http://cobweb.cs.uga.edu/~maria/classes/4070-Spring-2016/tutorial1/8.keyboard-purple-ball-keyboard-SHIFT.html-->
+
+<!--Setting the interval-->
+<!--http://www.w3schools.com/jsref/met_win_setinterval.asp-->
+
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Boxed!IN! </title>
+    <style type="text/css">
+        canvas { border: 3px solid black; }
+    </style>
+
+    <script type="text/javascript">
+
+
+        //Gui interface variables
+        var speed; //speed to traverse maze
+        var startX;
+        var startY;
+        var endX;
+        var endY;
+
+
+
+        //Window variables
+
+
+        var cellLength = 1000;
+        var ctx;
+        var ctx2;
+
+        var x = 150;
+        var y = 300;
+
+        var WIDTH = 300;
+        var HEIGHT = 200;
+
+        var interval1 = speed;
+        var canvas;
+
+        var topColor    = "black";
+        var leftColor   = "black";
+        var bottomColor = "black";
+        var rightColor  = "black";
+
+        //Assignment of all the nodes
+        ///////////////////////////////
+        var nodeList = [];
+        var startNode = 95;
+        var endNode = 0;
+        var newNode;
+        //var indexOf;
+        var tempNode;
+
+        var xCoord = 30;
+        var yCoord = 50;
+        var assign = false;
+        var map = 1;
+
+        ///queue code
+        var queue;
+        var rowLength = 10;
+        var colLength = 10;
+
+        //Neighbor nodes
+        var currNode;
+
+        var neighborTop;
+        var neighborTopR;
+        var neighborRight;
+        var neighborBotR;
+        var neighborBot;
+        var neighborBotL;
+        var neighborLeft;
+        var neighborTopL;
+
+        var Node = function (x,y,width,height,color) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+            this.hit = false;
+            this.color = color;
+            this.F = 0;
+            this.G = 0;
+            this.H = 0;
+            this.xArrow = 0; //coordinates to plot arrow pointing to the parent node
+            this.yArrow = 0; // ...
+            this.arrow = "";  //type of arrow to display
+            this.parent = null;
+            this.closedList = false;
+        };
+
+
+
+
+        //calculate how far the node is horizontally from the end node
+        function assignHHorizontal( nodePos, endPos)
+        {
+            //Check if the node is in the same row as the endPos
+            //We check the first digit of both numbers
+
+            var start = retrieveDigit(nodePos, 1);
+            var end = retrieveDigit(endPos, 1);
+            var hDistance = end - start;
+
+            if(hDistance < 0){
+                hDistance *= -1;
+            }
+
+            return hDistance;
+        }
+
+        //calculate how far the node is vertically from the end node
+        function assignHVertical( nodePos, endPos)
+        {
+            //Check if the node is in the same row as the endPos
+            //We check the first digit of both numbers
+
+            var start = retrieveDigit(nodePos, 0);
+            var end = retrieveDigit(endPos, 0);
+            var vDistance = end - start;
+
+            if(vDistance < 0){
+                vDistance *= -1;
+            }
+
+
+            return vDistance;
+        }
+
+
+
+        //calculate how far the node is horizontally from the start node
+        function assignGHorizontal( nodePos, startPos)
+        {
+            //Check if the node is in the same row as the endPos
+            //We check the first digit of both numbers
+
+            var start = retrieveDigit(nodePos, 1);
+            var end = retrieveDigit(startPos, 1);
+            var hDistance = end - start;
+
+            if(hDistance < 0){
+                hDistance *= -1;
+            }
+
+            return hDistance;
+        }
+
+        //calculate how far the node is vertically from the start node
+        function assignGVertical( nodePos, startPos)
+        {
+            //Check if the node is in the same row as the endPos
+            //We check the first digit of both numbers
+
+            var start = retrieveDigit(nodePos, 0);
+            var end = retrieveDigit(startPos, 0);
+            var vDistance = end - start;
+
+            if(vDistance < 0){
+                vDistance *= -1;
+            }
+
+
+            return vDistance;
+        }
+
+
+
+
+
+
+
+        //Calculates the H value by adding the vertical and horizontal distance from the current node to the end node
+        function assignHValue( vertical , horizontal)
+        {
+            var total = vertical + horizontal;
+            return total;
+        }
+
+        //Calculates the H value by adding the vertical and horizontal distance from the current node to the end node
+        function assignGValue( vertical , horizontal)
+        {
+            var total = vertical + horizontal;
+            return total;
+        }
+
+
+        //////////////////
+        ///////////
+        //Assignment of node values
+        function assignNodes() {
+
+
+            for (i = 0; i < cellLength; i++) {
+
+                if (i % 10 == 0) {
+                    yCoord += 30;
+                    xCoord = 30;
+                }
+
+                xCoord += 30;
+
+                //G is for vertical
+                nodeList[i] = new Node(xCoord, yCoord, 20, 20, "black");
+                nodeList[i].H = assignHValue(assignHHorizontal(i, endNode), assignHVertical(i, endNode));
+                nodeList[i].G = assignGValue(assignGHorizontal(i, startNode), assignGVertical(i, startNode));
+
+                var temp = nodeList[i].H + nodeList[i].G;
+
+                nodeList[i].F = parseInt(nodeList[i].G) + parseInt(nodeList[i].H);
+            }
+        }
+
+
+
+        function assignBarriers1() {
+            nodeList[40].color = "chocolate";
+            nodeList[41].color = "chocolate";
+            nodeList[51].color = "chocolate";
+            nodeList[61].color = "chocolate";
+            nodeList[71].color = "chocolate";
+            nodeList[81].color = "chocolate";
+            nodeList[56].color = "chocolate";
+
+            nodeList[14].color = "chocolate";
+            nodeList[24].color = "chocolate";
+            nodeList[34].color = "chocolate";
+            nodeList[44].color = "chocolate";
+            nodeList[54].color = "chocolate";
+            nodeList[64].color = "chocolate";
+            nodeList[74].color = "chocolate";
+            nodeList[84].color = "chocolate";
+            nodeList[94].color = "chocolate";
+        }
+
+
+        function assignBarriers2() {
+            nodeList[10].color = "chocolate";
+            nodeList[11].color = "chocolate";
+            nodeList[12].color = "chocolate";
+            nodeList[19].color = "chocolate";
+            nodeList[18].color = "chocolate";
+            nodeList[17].color = "chocolate";
+            nodeList[21].color = "chocolate";
+
+            nodeList[33].color = "chocolate";
+            nodeList[34].color = "chocolate";
+            nodeList[56].color = "chocolate";
+            nodeList[67].color = "chocolate";
+            nodeList[69].color = "chocolate";
+            nodeList[71].color = "chocolate";
+            nodeList[72].color = "chocolate";
+            nodeList[88].color = "chocolate";
+            nodeList[89].color = "chocolate";
+        }
+
+
+        function assignBarriers3() {
+            nodeList[35].color = "chocolate";
+            nodeList[45].color = "chocolate";
+            nodeList[55].color = "chocolate";
+
+        }
+
+        function assignRandomBarriers(){
+
+            for(var i = 0; i < cellLength/10; i++)
+            {
+                var temp2  = Math.floor((Math.random() * 10) + 1) * i;
+
+                nodeList[temp2].color = "chocolate";
+
+            }
+
+
+
+        }
+
+
+        //Finding the node with the lowest F value in the queue to traverse
+        function minFValueInQueue(){
+
+            if( currNode != null && nodeList[endNode].color != "blue") {
+
+                var assignMin = false;
+                var minFValue;
+                var indexOf;
+
+                nodeList[currNode].closedList = true; //adding the current node the closed list
+
+                calculateNeighborPositions();
+
+
+                for (var i = 0; i < queue.length; i++)//runs through loop looking for the next node to check next
+                {
+
+                    if(!assignMin) {
+
+                        for ( var n = 0; n < nodeList.length; n++)
+                        {
+
+                            if ( queue[i] == n && !nodeList[n].closedList) {
+                                minFValue = nodeList[n].F;
+                                indexOf = n;
+                                assignMin = true;
+                            }
+                        }
+
+                    }
+
+                }//end of for loop
+
+
+                for (var j = 0; j < queue.length; j++)//runs through loop looking for the next node to check next
+                {
+
+                    if(assignMin) {
+
+                        for ( var k = 0; k < nodeList.length; k++)
+                        {
+
+                            if ( queue[j] == k && !nodeList[k].closedList && nodeList[k].F < minFValue) {
+                                minFValue = nodeList[k].F;
+                                indexOf = k;
+                            }
+                        }
+
+                    }
+
+                }//end of for loop
+
+
+
+                currNode = indexOf;
+            }//end of if statement
+        }
+
+
+        //Retrieves row and column number
+        function retrieveDigit( number, position )
+        {
+
+            var numString = String(number);
+
+            //Account for a single digit number
+            if(numString.length == 1 && position == 0){
+                return 0;
+            }
+            else if( numString.length == 1 && position == 1)
+            {
+                return Number(numString.charAt(0));
+            }
+            //accounting for double digit numbers
+            else if( position == 0)
+            {
+                return Number( String(number).charAt(0));
+            }
+            else if( position == 1)
+            {
+                return Number( String(number).charAt(1));
+            }
+
+        }
+
+        //if node doesn't have a parent then we assign the node to the currNode value
+        function assignParent( node )
+        {
+            if(nodeList[node].parent == null)
+            {
+                nodeList[node].parent = currNode;
+            }
+
+        }
+
+
+        //Loads the window
+        function init()
+        {
+            ctx = document.getElementById('canvas').getContext('2d');
+            canvas = document.getElementById('canvas');
+
+            WIDTH = ctx.canvas.width; // not with the canvas 'variable'
+            HEIGHT = ctx.canvas.height;
+            
+            setInterval( draw, speed );
+
+        }
+
+        //Loads the window
+        function init2()
+        {
+            ctx = document.getElementById('canvas').getContext('2d');
+            canvas = document.getElementById('canvas');
+
+            WIDTH = ctx.canvas.width; // not with the canvas 'variable'
+            HEIGHT = ctx.canvas.height;
+
+            draw();
+
+
+        }
+
+
+        function defaultMap()
+        {
+            assignNodes();
+
+           assignRandomBarriers();
+
+            cellLength = 1000;
+            map = 1;
+            startNode = 99;
+            endNode = 782
+            shape = 1;
+            queue = [startNode];
+            currNode = queue[0];
+
+            nodeList[startNode].color = "green";
+            nodeList[endNode].color = "yellow";
+
+
+            init();
+
+
+        }
+
+        //GUI functions
+        function start()
+        {
+            assignNodes();
+
+            if( document.getElementById("cellLength").value != null) {
+                cellLength = parseInt(document.getElementById("cellLength").value);
+
+            }
+
+            map = parseInt(document.getElementById("map").value);
+
+            if(map == 3) {
+                assignBarriers3();
+            }
+            else if( map == 2)
+            {
+                assignBarriers2();
+            }
+            else{
+                assignBarriers1();
+            }
+
+            speed = parseInt(document.getElementById("speed").value);
+            startX = document.getElementById("startX").value;
+            startY = document.getElementById("startY").value;
+            endX = document.getElementById("endX").value;
+            endY = document.getElementById("endY").value;
+
+            if (startX != "") {
+                startNode =  parseInt(startX);
+                endNode =  parseInt(endX);
+            }
+
+
+            if( parseInt(document.getElementById("algorithm").value) == 2){
+                var temp = startNode;
+                startNode = endNode;
+                endNode = temp;
+            }
+
+
+            queue = [startNode];
+            currNode = queue[0];
+
+            nodeList[startNode].color = "green";
+            nodeList[endNode].color = "yellow";
+
+
+            init();
+
+        }
+
+        function stepThrough()
+        {
+            if( !assign ) {
+                assign = true;
+
+
+                if( document.getElementById("cellLength").value != null) {
+                    cellLength = parseInt(document.getElementById("cellLength").value);
+                }
+
+
+                assignNodes();
+
+                map = parseInt(document.getElementById("map").value);
+
+                if(map == 3) {
+                    assignBarriers3();
+                }
+                else if( map == 2)
+                {
+                    assignBarriers2();
+                }
+                else{
+                    assignBarriers3();
+                }
+
+
+
+                speed = parseInt(document.getElementById("speed").value);
+                startX = document.getElementById("startX").value;
+                startY = document.getElementById("startY").value;
+                endX = document.getElementById("endX").value;
+                endY = document.getElementById("endY").value;
+
+                if (startX != "") {
+                    startNode =  parseInt(startX);
+                    endNode =  parseInt(endX);
+                }
+
+
+                if( parseInt(document.getElementById("algorithm").value) == 2){
+                    var temp = startNode;
+                    startNode = endNode;
+                    endNode = temp;
+                }
+
+                queue = [startNode];
+                currNode = queue[0];
+
+                nodeList[startNode].color = "green";
+                nodeList[endNode].color = "yellow";
+            }
+
+            init2();
+
+        }
+
+
+
+
+        //function to draw rectangle
+        function rect(x,y,w,h,color)
+        {
+
+
+
+
+            if( document.getElementById("shape").value != null)
+                {
+
+                    if( parseInt(document.getElementById("shape").value) == 2)
+                        {
+
+                            ctx.beginPath();
+                            ctx.arc(x,y,w,0,2*Math.PI);
+                            ctx.fillStyle = color;
+                            ctx.fill();
+                            ctx.stroke();
+                            ctx.closePath();
+
+                        }
+                    else
+                    {
+                        ctx.beginPath();
+                        ctx.rect(x,y,w,h);
+                        ctx.closePath();
+                        ctx.fillStyle = color;
+                        ctx.fillRect(x,y,w,h);
+                        ctx.fill();
+                        ctx.stroke();
+
+                    }
+
+            }
+            else
+            {
+                ctx.beginPath();
+                ctx.rect(x,y,w,h);
+                ctx.closePath();
+                ctx.fillStyle = color;
+                ctx.fillRect(x,y,w,h);
+                ctx.fill();
+                ctx.stroke();
+
+
+            }
+
+
+
+
+        }
+
+
+
+        //clears the canvas
+        function clear()
+        {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        }
+
+        //Draws the borders for the background
+        function drawBorders()
+        {
+            rect(20, 0, 5600, 20, topColor);    //top side
+            rect(0, 20, 20, 5600, leftColor);   //left side
+            rect(20, 5800, 5600, 5600, bottomColor); //bottom side
+            rect(5800, 20, 5600, 5600, rightColor);  //right side
+        }
+
+
+        //add neighbors to the queue
+        //assign parents to each node
+        //assign H and G values to each node
+        function calculateNeighborPositions()
+        {
+            //currNode = queue.shift();
+
+             //currNode = minFValueInQueue();
+
+
+            if(currNode != null && nodeList[endNode].color != "blue"  ) {
+
+                //Top node
+                if (currNode > rowLength - 1 ) {
+
+                    neighborTop = currNode - rowLength;
+
+                    if(nodeList[neighborTop].color != "red") {
+
+                        assignParent(neighborTop);
+
+                        changeNeighborColor(neighborTop);
+                    }
+
+
+
+
+                }
+
+                //TopR
+                if (currNode > rowLength - 1 &&
+                        (currNode + 1) % rowLength != 0) {
+
+                    neighborTopR = currNode - 9;
+
+                    if(nodeList[neighborTopR].color != "red") {
+
+                        assignParent(neighborTopR);
+
+                        changeNeighborColor(neighborTopR);
+                    }
+                }
+
+            //R
+            if((currNode + 1) % rowLength !=0 && neighborRight != cellLength-1) {
+
+                neighborRight = currNode + 1;
+
+                if(nodeList[neighborRight].color != "red") {
+                    assignParent(neighborRight);
+
+                    changeNeighborColor(neighborRight);
+                }
+
+            }
+
+                //BotR
+                if (currNode < 90 &&
+                        (currNode + 1) % rowLength != 0) {
+
+                    neighborBotR = currNode + 11;
+
+                    if(nodeList[neighborBotR].color != "red") {
+
+                        assignParent(neighborBotR);
+
+                        changeNeighborColor(neighborBotR);
+                    }
+                }
+
+                //Bot
+                if (currNode < cellLength - rowLength) {
+
+                    neighborBot = currNode + rowLength;
+
+                    if(nodeList[neighborBot].color != "red") {
+
+                        assignParent(neighborBot);
+
+                        changeNeighborColor(neighborBot);
+                    }
+                }
+
+                //BotL
+                if (currNode < 90 &&
+                        currNode % rowLength != 0) {
+
+                    neighborBotL = currNode + 9;
+
+                    if(nodeList[neighborBotL].color != "red") {
+
+                        assignParent(neighborBotL);
+
+                        changeNeighborColor(neighborBotL);
+
+                    }
+                }
+
+                //L
+                if (currNode % rowLength != 0) {
+
+                    neighborLeft = currNode - 1;
+
+                    if(nodeList[neighborLeft].color != "red") {
+
+                        assignParent(neighborLeft);
+
+                        changeNeighborColor(neighborLeft);
+                    }
+                }
+
+                //TopL
+                if (currNode % rowLength != 0 &&
+                        currNode >= rowLength) {
+
+                    neighborTopL = currNode - 11;
+
+                    if(nodeList[neighborTopL].color != "red") {
+
+                        assignParent(neighborTopL);
+
+                        changeNeighborColor(neighborTopL);
+                    }
+                }
+            }
+        }
+
+        //changes the neighbor color if necessary
+        function changeNeighborColor( neighbor )
+        {
+            if(nodeList[neighbor].color == "black")
+            {
+                nodeList[neighbor].color = "red";
+                queue.push(neighbor);
+            }
+            else if ( nodeList[neighbor].color == "yellow")
+            {
+                nodeList[neighbor].color = "blue";
+                queue.push(neighbor);
+            }
+        }
+
+        //Display all the rectangles onto the screen
+        function plotRectangles(){
+
+            for(i = 0; i < cellLength; i++) {
+
+                rect(nodeList[i].x, nodeList[i].y, nodeList[i].width, nodeList[i].height, nodeList[i].color);
+            }
+        }
+
+
+        function assignArrows()
+        {
+            for( var i = 0; i < nodeList.length; i++)
+            {
+                if(nodeList[i].parent != null && nodeList[i].color != "chocolate")
+                {
+                    switch( i - nodeList[i].parent )
+                    {
+                        //checking above; going clockwise
+                        case 10:
+                            nodeList[i].arrow = "^";
+                            break;
+
+                        case 9:
+                            nodeList[i].arrow = "/'";
+                            break;
+
+                        case -1:
+                            nodeList[i].arrow = ">";
+                            break;
+
+                        case -11:
+                            nodeList[i].arrow = "\\.";
+                            break;
+
+                        case -10:
+                            nodeList[i].arrow = "v";
+                            break;
+
+                        case -9:
+                            nodeList[i].arrow = "./";
+                            break;
+
+                        case 1:
+                            nodeList[i].arrow = "<";
+                            break;
+
+                        case 11:
+                            nodeList[i].arrow = "'\\";
+
+                    }
+                }
+
+            }
+        }
+
+        //plot arrows pointing to parent
+        function plotArrows()
+        {
+            for(var i = 0; i < nodeList.length; i++)
+            {
+                ctx.font = "10px Georgia";
+                ctx.fillStyle = "black";
+                ctx.fillText(nodeList[i].arrow, nodeList[i].x + 10, nodeList[i].y + 12, 450);
+            }
+        }
+
+
+        function totalNoOfSteps( totalSteps )
+        {
+            ctx.font = "20px Georgia";
+            ctx.fillStyle = "black";
+            ctx.fillText( "Total Number of Steps: " + totalSteps , 100, 500, 900);
+//            ctx.fillText(  "F: " + nodeList[endNode].F , 100, 520 , 400);
+//            ctx.fillText(  "G: " + nodeList[endNode].G , 100, 540 , 400);
+//            ctx.fillText(  "H: " + nodeList[endNode].H , 100, 560 , 400);
+        }
+
+
+
+
+        //trace the shortest path from the start node to the end node
+        function shortPath()
+        {
+
+        if( nodeList[endNode].color == "blue") {
+
+            var foundPath = false;
+            var shortPath = [];
+            var node = endNode;
+            var totalSteps = 1;
+
+            shortPath.push(endNode);
+
+                while (!foundPath) {
+
+                    if (nodeList[node].parent != startNode)
+                    {
+                        totalSteps++;
+                        shortPath.push(nodeList[node].parent);
+                        node = nodeList[node].parent;
+                        nodeList[node].color = "#F0F8FF";
+
+                    }
+                    else
+                    {
+                        foundPath = true;
+                        totalNoOfSteps(totalSteps);
+                    }
+
+                }
+            }
+        }
+
+
+        function draw()
+        {
+            clear();
+            drawBorders();
+           // calculateNeighborPositions();
+            minFValueInQueue();
+            assignArrows();
+            plotRectangles();
+            plotArrows();
+
+
+            //once the map is traverse, maps the route of the shortest path
+                if(nodeList[endNode].color == "blue")
+                {
+                    shortPath();
+                }
+
+
+
+
+
+            
+        }
+
+    </script>
+</head>
+
+<!-- HERE we add an explicit call to the draw() function -->
+<!--<body background= "Room.3.jpg" onload="init()">-->
+<body>
+
+
+
+
+
+
+
+<!--Stepping through the function-->
+<button onClick = "stepThrough()" type="button">Step through!</button><br>
+
+<input type="number" id = "speed" placeholder ="speed" ><br>
+
+<input type="number" id = "startX" placeholder ="startCoords" ><br>
+
+<input type="number" id = "startY" placeholder ="" ><br>
+
+<input type="number" id = "endX" placeholder ="endCoords" ><br>
+
+<input type="number" id = "endY" placeholder ="" ><br>
+
+<input type="number" id = "map" placeholder ="Map: 1 or 2 or 3" ><br>
+
+<input type="number" id = "cellLength" placeholder ="Cell Length: 100 or 500 or 1000" ><br>
+
+<input type="number" id = "shape" placeholder ="Rect: 1 ; Circle: 2" ><br>
+
+<input type="number" id = "algorithm" placeholder ="A*: 1 ; D*: 2" ><br>
+
+
+<!--Starting the function-->
+<button onClick = "start()" type="button">Start</button><br>
+
+<button onClick = "defaultMap()" type="button">Default</button><br>
+
+
+
+
+
+
+
+
+<canvas id="canvas" width="6000" height="6000">
+    Your browser does not support the canvas element.
+</canvas>
+
+
+
+</body>
+
+
+</html>
+

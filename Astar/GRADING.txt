@@ -1,0 +1,42 @@
+REPORT.txt
+
+Below are the requirements I attemped and am seeking either partial/full credit for.
+
+3 Default Maps:
+Customizable map( 100, 500, 1000 cells)
+Final Path Drawn
+Final # Steps Displayed
+Efficency Smooth Animation
+Control Speed Animation
+At least size 500 support size
+Configurable goal and start placement
+Stepped Speed
+Report w/ screenshots and video
+Quality Craftmanship
+Grading.txt
+3 tests for correctness
+Readme.txt
+Demo
+Manhattan Heuristics( checking distance from the node by moving only horizontally and vertically)
+
+Embellishments
+----------------
+Compare to D*
+Large Environment of more than 1000 cells
+Circle shapes
+
+Other:
+ I added arrows to the rectangles to point to the the parent that they originated from.
+ path finding algorithm can make diagonal cuts
+ 
+< Left
+> Right
+^ Up
+v down
+'\ topL
+/' top R
+./ botL
+\. botR
+
+
+ The default map of 1000 randomly generates obstacles.
